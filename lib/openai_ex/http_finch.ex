@@ -28,7 +28,10 @@ defmodule OpenaiEx.Http.Finch do
   end
 
   def stream(request, openai = %OpenaiEx{}, fun) do
-    Finch.stream(request, Map.get(openai, :finch_name), nil, fun, request_options(openai))
+    case Finch.stream(request, Map.get(openai, :finch_name), nil, fun, request_options(openai)) do
+      {:ok, stream} -> stream
+      {:error, %{reason: reason}} -> to_error(reason, request)
+    end
   end
 
   def request(request, openai = %OpenaiEx{}) do
